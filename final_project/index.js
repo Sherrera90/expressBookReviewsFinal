@@ -9,8 +9,12 @@ const app = express();
 app.use(express.json());
 
 app.use("/customer",session({secret:"fingerprint_customer",resave: true, saveUninitialized: true}))
-
+  
 app.use("/customer/auth/*", function auth(req,res,next){
+
+    if (!req.session.authorization) {
+        req.session.authorization = {};
+    }
     const username = req.body.username;
     const password = req.body.password;
     if (!username || !password) {
@@ -25,7 +29,7 @@ app.use("/customer/auth/*", function auth(req,res,next){
     }
     return res.status(200).send("User successfully logged in");
     } else {
-      return res.status(208).json({message: "Invalid Login. Check username and password"});
+      return res.status(400).json({message: "Invalid Login. Check username and password"});
     }});
  
 const PORT =5000;
